@@ -1,4 +1,6 @@
-﻿function Add-AccessToMailbox {
+﻿#The user that runs this sprit command needs to have Adm rights on exchange to work
+
+function Add-AccessToMailbox {
      [CmdletBinding()]
      param (
           [parameter(Mandatory=$true)]
@@ -44,7 +46,7 @@
                Write-Host $('-'*($Message.Length))
                Write-Host $Message
                Write-Host $('-'*($Message.Length))
-               Get-Mailbox $MB | Get-MailboxPermission |select * | where {$_.user.tostring() -ne "NT AUTHORITY\SELF" -and $_.IsInherited -eq $false}| Select user, accessrights |Format-Table
+               Get-Mailbox $MB | Get-MailboxPermission | Where-Object {$_.user.tostring() -ne "NT AUTHORITY\SELF" -and $_.IsInherited -eq $false}| Select-Object user, accessrights |Format-Table
           }
      }
      
