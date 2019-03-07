@@ -30,6 +30,7 @@
      Import-PSSession $session -CommandName Add-MailboxPermission,Get-MailboxPermission,Get-Mailbox,Add-ADPermission | Out-Null
 }
      process {
+          #This funcition is where the permitions are given
           foreach ($MB in $MailboxList) {
                foreach ($User in $Users) {
                     Add-MailboxPermission -Identity $MB -user $User -AccessRights FullAccess -AutoMapping $false -InheritanceType All|
@@ -37,7 +38,7 @@
                     Write-Host "Access Granted in $MB for $User"
                }
           }
-          
+          #This function will give a list of users of each changed mailbox
           foreach ($MB in $MailboxList) {
                $Message = "New list of users of $MB"
                Write-Host $('-'*($Message.Length))
