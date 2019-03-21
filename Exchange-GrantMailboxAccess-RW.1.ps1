@@ -28,7 +28,12 @@ function Add-AccessToMailbox {
                Exit
           }
      #stating session on exchange server
-     $session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri http://saovw360.hsdg-ad.int/PowerShell -Authentication Kerberos
+
+     $session_paran = @{'ConfigurationName' = "Microsoft.Exchange";
+                         'ConnectionUri' = 'http://saovw360.hsdg-ad.int/PowerShell'; #you can change to your exchange server here
+                         'Authentication' = 'Kerberos'}
+
+     $session = New-PSSession @session_paran
      Import-PSSession $session -CommandName Add-MailboxPermission,Get-MailboxPermission,Get-Mailbox,Add-ADPermission | Out-Null
 }
      process {
