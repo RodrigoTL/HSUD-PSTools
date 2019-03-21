@@ -1,4 +1,4 @@
-﻿#The user that runs this sprit command needs to have Adm rights on exchange to work
+﻿#The user that runs this script command needs to have Adm rights on exchange to work
 
 function Add-AccessToMailbox {
      [CmdletBinding()]
