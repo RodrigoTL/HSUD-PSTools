@@ -1,5 +1,4 @@
-﻿
-function Send-emailInstructions {
+﻿function Send-emailInstructions {
     param (
         [parameter(Mandatory=$true)]
         [String[]]
