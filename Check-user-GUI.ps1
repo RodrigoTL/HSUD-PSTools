@@ -3,12 +3,15 @@ Created by Rodrigo Lima (rodrlima)
 Rodrigo.lima-external@alianca.com.br
 #>
 
-$Release = "0.01"
+$Release = "0.03"
 Add-Type -AssemblyName System.Windows.Forms
+[void] [System.Reflection.Assembly]::LoadWithPartialName("System.Drawing") 
+[void] [System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms") 
 [System.Windows.Forms.Application]::EnableVisualStyles()
 
 $Form                            = New-Object system.Windows.Forms.Form
-$Form.ClientSize                 = '1400,745'
+$Form.ClientSize.Height          = 1400
+$Form.ClientSize.Width           = 745
 $Form.text                       = "Get user info"
 $Form.TopMost                    = $false
 
@@ -80,12 +83,12 @@ $UserNameBox.Focus() }
 function GetinfoFunction ($UserName) {
 $Result = get-aduser $UserName `
     -properties DistinguishedName,name, enabled, mail, extensionAttribute1,extensionAttribute3,extensionAttribute14, PasswordLastSet, PasswordExpired,lastlogon,employeeType,ScriptPath |
-    select name,mail, DistinguishedName, enabled,ScriptPath, extensionAttribute1,extensionAttribute3,extensionAttribute14, PasswordLastSet, PasswordExpired,@{N='LastLogon'; E={[DateTime]::FromFileTime($_.LastLogon)}},employeeType |fl |out-string
+    select-object name,mail, DistinguishedName, enabled,ScriptPath, extensionAttribute1,extensionAttribute3,extensionAttribute14, PasswordLastSet, PasswordExpired,@{N='LastLogon'; E={[DateTime]::FromFileTime($_.LastLogon)}},employeeType |Format-list |out-string -Width 170
 $Groups = Get-ADPrincipalGroupMembership $UserName
 $ResultGroups = $Groups | 
-    select name |
+    select-object name |
     Sort-Object -Property name |
-    Format-Wide -AutoSize| Out-String
+    Format-Wide -AutoSize| Out-String -Width 170
     #Format-Wide -Column 3 -AutoSize| Out-String
 
 $Filgroups = 
@@ -93,24 +96,28 @@ $Groups |
     Where-Object {$_ -Like "*-FIL*"} | 
     Sort-Object -Property name | 
     Get-ADGroup -Properties Description | 
-    Select Name,Description | 
-    Format-Table -AutoSize | Out-String
+    Select-object Name,Description | 
+    Format-Table -AutoSize | Out-String -Width 170
+
+$SCRGroups = 
+$Groups | 
+    Where-Object {$_ -Like "*-SCR-*"} | 
+    Sort-Object -Property name | 
+    Get-ADGroup -Properties Description | 
+    Select-object Name,Description | 
+    Format-Table -AutoSize | Out-String -Width 170
 
 $ResultBox.text = $Result
 $ResultBox.text += "User Groups"
 $ResultBox.text += $ResultGroups
 $ResultBox.text += "Folder Groups"
 $ResultBox.text += $Filgroups
-<#
-$ResultBox.AppendText($Result)
-$ResultBox.AppendText("User Groups")
-$ResultBox.AppendText($ResultGroups)
-$ResultBox.AppendText("Folder Groups")
-$ResultBox.AppendText($Filgroups)
-#>
+$ResultBox.text += "SCR groups:"
+$ResultBox.text += $SCRGroups
+
  }
 
 
-#Write your logic code here
+
 
 [void]$Form.ShowDialog()
